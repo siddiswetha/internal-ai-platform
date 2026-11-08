@@ -1,0 +1,23 @@
+# Continuous integration: unit tests + the 12-case eval, on every push.
+# No secrets, no outside services, no Docker needed for these steps.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check the service code compiles
+        run: python3 -m py_compile services/*/main.py cli.py scripts/canary.py evals/eval.py
+      - name: Run unit and integration tests
+        run: python3 -m unittest discover -s tests -v
+      - name: "Run the 12-case eval (pass bar: 12/12)"
+        run: python3 evals/eval.py
