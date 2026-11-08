@@ -1,0 +1,13 @@
+id,question,expected_doc,result
+E01,What are the steps to close the month?,month-end-close-checklist.md,PASS
+E02,How do we reconcile the ledger against the bank statement?,month-end-close-checklist.md,PASS
+E03,When should vendor invoices be paid?,vendor-payment-policy.md,PASS
+E04,Who approves vendor payments over $1000?,vendor-payment-policy.md,PASS
+E05,What should a monthly report include?,reporting-guide.md,PASS
+E06,How are dashboards built for monthly reporting?,reporting-guide.md,PASS
+E07,What receipts are needed for travel expenses?,expense-policy.md,PASS
+E08,What is the limit for travel expenses without extra approval?,expense-policy.md,PASS
+E09,How do I submit a vendor invoice?,vendor-payment-policy.md,PASS
+E10,What happens after the close checklist is finished?,month-end-close-checklist.md,PASS
+E11,How often are reports published?,reporting-guide.md,PASS
+E12,What is the capital of France?,none,PASS
