@@ -1,0 +1,46 @@
+# Run the whole internal AI platform with one command:
+#   docker compose up --build
+# Question service on 8001, retrieval service on 8002, answer service on 8003.
+# Build context is the project root, so the retrieval service can copy docs/.
+services:
+  retrieval-service:
+    build:
+      context: .
+      dockerfile: services/retrieval-service/Dockerfile
+    ports:
+      - "8002:8002"
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8002/health', timeout=3)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+  answer-service:
+    build:
+      context: .
+      dockerfile: services/answer-service/Dockerfile
+    ports:
+      - "8003:8003"
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8003/health', timeout=3)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+  question-service:
+    build:
+      context: .
+      dockerfile: services/question-service/Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      RETRIEVAL_URL: http://retrieval-service:8002
+      ANSWER_URL: http://answer-service:8003
+    depends_on:
+      retrieval-service:
+        condition: service_healthy
+      answer-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=3)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
