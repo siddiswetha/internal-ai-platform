@@ -1,0 +1,35 @@
+# One ClusterIP Service per service, so the services reach each other
+# by name inside the cluster (retrieval-service:8002, answer-service:8003).
+# Apply with: kubectl apply -f k8s/
+apiVersion: v1
+kind: Service
+metadata:
+  name: question-service
+spec:
+  selector:
+    app: question-service
+  ports:
+    - port: 8001
+      targetPort: 8001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: retrieval-service
+spec:
+  selector:
+    app: retrieval-service
+  ports:
+    - port: 8002
+      targetPort: 8002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: answer-service
+spec:
+  selector:
+    app: answer-service
+  ports:
+    - port: 8003
+      targetPort: 8003

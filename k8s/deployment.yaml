@@ -1,0 +1,135 @@
+# Kubernetes manifests for the 3 services. Plain yaml, not applied to
+# a real cluster here: there is no cluster in this project. To use
+# them, build the 3 images from the Dockerfiles, push them to a
+# registry, replace the image names below, then run:
+#   kubectl apply -f k8s/
+# Each Deployment has a liveness and readiness probe on /health.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: question-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: question-service
+  template:
+    metadata:
+      labels:
+        app: question-service
+    spec:
+      containers:
+        - name: question-service
+          image: internal-ai-platform-question:latest
+          ports:
+            - containerPort: 8001
+          env:
+            - name: PORT
+              value: "8001"
+            - name: RETRIEVAL_URL
+              value: "http://retrieval-service:8002"
+            - name: ANSWER_URL
+              value: "http://answer-service:8003"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retrieval-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: retrieval-service
+  template:
+    metadata:
+      labels:
+        app: retrieval-service
+    spec:
+      containers:
+        - name: retrieval-service
+          image: internal-ai-platform-retrieval:latest
+          ports:
+            - containerPort: 8002
+          env:
+            - name: PORT
+              value: "8002"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8002
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8002
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: answer-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: answer-service
+  template:
+    metadata:
+      labels:
+        app: answer-service
+    spec:
+      containers:
+        - name: answer-service
+          image: internal-ai-platform-answer:latest
+          ports:
+            - containerPort: 8003
+          env:
+            - name: PORT
+              value: "8003"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8003
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8003
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
